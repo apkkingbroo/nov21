@@ -451,7 +451,7 @@
             let sum = [...lastTwoDigits].reduce((a, b) => a + parseInt(b), 0);
             if (sum > 9) sum = [...String(sum)].reduce((a, b) => a + parseInt(b), 0);
 
-            let isBig = sum >= 5;
+            let isBig = sum >= 8;
             let result = isBig ? "BIG" : "SMALL";
             let className = isBig ? "big" : "small";
 
