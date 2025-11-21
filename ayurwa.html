@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>✈️ Apkmodderkings Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; /* Prevent text selection while dragging */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #000;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Background Website iframe */
+        #bg-site {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 0;
+        }
+
+        /* --- SHARE LOCK SCREEN --- */
+        #lockScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .lock-content h2 {
+            color: #ffeb3b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 22px;
+        }
+
+        .lock-content p {
+            margin-bottom: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .share-btn {
+            background: linear-gradient(45deg, #00c6ff, #0072ff); /* Blue gradient for general share */
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        .share-btn i { margin-right: 8px; }
+        .share-btn:active { transform: scale(0.95); }
+
+        /* Version Label */
+        .version-label {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 990;
+            pointer-events: none;
+            display: none;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- UPDATED DRAGGABLE FLOATING BUTTON (Smaller & New Icon) --- */
+        #open {
+            position: fixed;
+            top: 100px;
+            right: 15px;
+            /* Made smaller */
+            width: 40px; 
+            height: 40px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: move;
+            z-index: 1000;
+            border: 2px solid rgba(255,255,255,0.8);
+            /* Subtler glow */
+            animation: subtleGlow 2s infinite alternate;
+        }
+
+        @keyframes subtleGlow {
+            from { box-shadow: 0 0 5px #fff, 0 0 10px #ff00de; }
+            to { box-shadow: 0 0 10px #fff, 0 0 15px #ff00de; }
+        }
+
+        #open i {
+            font-size: 18px; /* Smaller icon size */
+            color: #fff;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+        }
+
+        /* --- UPDATED PREMIUM DIALOG BOX (Smaller) --- */
+        .dialog-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 85%;
+            /* Reduced max-width for compactness */
+            max-width: 280px; 
+            background: rgba(12, 18, 34, 0.9); /* Darker premium background */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            /* Gold/Premium border glow */
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 15px rgba(255, 215, 0, 0.1);
+            padding: 15px; /* Reduced padding */
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy open */
+            color: white;
+        }
+
+        .dialog-box.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Close Button */
+        .close-btn {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #888;
+            z-index: 2;
+        }
+
+        /* Telegram Header - Compact */
+        .telegram-header {
+            background: linear-gradient(to right, #0088cc, #005f8f);
+            margin: -15px -15px 12px -15px;
+            padding: 12px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .telegram-header i { margin-right: 8px; font-size: 18px; }
+
+        /* Content Styles - Compact */
+        .timer-box {
+            text-align: center;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.03);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .period-txt { font-size: 12px; color: #aaa; margin-bottom: 2px; }
+        .timer-countdown { font-size: 24px; font-weight: bold; font-family: monospace; color: #ffd700; }
+
+        .result-box { text-align: center; margin: 15px 0; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+
+        .result-text {
+            font-size: 32px;
+            font-weight: 900;
+            text-shadow: 0 0 15px currentColor;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .result-text.show { opacity: 1; transform: scale(1); }
+        .result-text.big { color: #25D366; }
+        .result-text.small { color: #ff3b30; }
+
+        /* Buy Paid Button - Compact */
+        .buy-paid-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            margin: 12px 0;
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            color: #3a2200;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+            border: 1px solid #ffe57f;
+        }
+
+        /* History Table - Compact */
+        .history-area {
+            margin-top: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 11px;
+        }
+        .history-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .history-big { color: #25D366; } .history-small { color: #ff3b30; }
+
+        /* Footer Warning - Compact */
+        .warning-box {
+            margin-top: 12px;
+            font-size: 10px;
+            color: #ffcc00;
+            background: rgba(255, 204, 0, 0.08);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 2px solid #ffcc00;
+            text-align: left;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+
+    <iframe id="bg-site" src="https://82bet22.com/#/register?invitationCode=14244992621"></iframe>
+
+    <div id="lockScreen">
+        <div class="lock-content">
+            <i class="fas fa-lock" style="font-size: 40px; color: #00c6ff; margin-bottom: 15px;"></i>
+            <h2>Premium Unlock</h2>
+            <p>Share with friends to unlock the Premium Hack Tool.</p>
+            <p style="font-size: 12px; opacity: 0.7; margin-bottom: 25px;">Remaining Shares: <span id="shareCount" style="color:#fff; font-weight:bold;">2</span></p>
+            
+            <button class="share-btn" id="shareBtn">
+                <i class="fas fa-share-alt"></i> Share App
+            </button>
+
+            <div style="margin-top: 30px; font-size: 11px; opacity: 0.8;">
+                Join Telegram for updates:<br>
+                <span style="color: #0088cc;">t.me/apkmodderkings</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="version-label" id="versionLabel">Version Renova v2 pro</div>
+
+    <div id="open">
+        <i class="fas fa-wand-magic-sparkles"></i>
+    </div>
+
+    <div class="dialog-box" id="dialogBox">
+        <div class="close-btn" id="closeBtn">&times;</div>
+        
+        <a href="https://telegram.me/apkmodderkings" target="_blank" class="telegram-header">
+            <i class="fab fa-telegram-plane"></i> ModderKings VIP
+        </a>
+
+        <div class="timer-box">
+            <div class="period-txt">Period: <span id="periodNumber">...</span></div>
+            <div class="timer-countdown" id="timerText">00:00</div>
+        </div>
+
+        <div class="result-box">
+            <div id="resultText" class="result-text">WAIT</div>
+        </div>
+
+        <a href="https://telegram.me/absentexe" target="_blank" class="buy-paid-btn">
+            <i class="fas fa-crown"></i> BUY VIP LICENSE
+        </a>
+
+        <div class="history-area">
+            <div style="text-align: center; margin-bottom: 3px; opacity: 0.5; font-size: 9px;">RECENT HISTORY</div>
+            <div id="historyList"></div>
+        </div>
+
+        <div class="warning-box">
+            <i class="fas fa-info-circle"></i> 
+            Must deposit 1000 in new account created with this hack for synchronization.
+        </div>
+    </div>
+
+    <script>
+        // --- UPDATED SHARE LOGIC (NATIVE ALL APPS SHARE) ---
+        let shareCount = 2;
+        const shareBtn = document.getElementById('shareBtn');
+        const shareCounterSpan = document.getElementById('shareCount');
+        const lockScreen = document.getElementById('lockScreen');
+        const openBtn = document.getElementById('open');
+        const versionLabel = document.getElementById('versionLabel');
+        
+        const shareData = {
+            title: 'Premium Hack Tool',
+            text: "Get the Renova v2 Pro Color Prediction Hack Tool! 100% Winning strategy. Join now:",
+            url: 'https://telegram.me/apkmodderkings'
+        };
+
+        shareBtn.addEventListener('click', async () => {
+            try {
+                // Try native share API first
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                    handleShareSuccess();
+                } else {
+                    // Fallback for browsers that don't support native share
+                    // Open WhatsApp directly as fallback
+                     window.open(`whatsapp://send?text=${encodeURIComponent(shareData.text + " " + shareData.url)}`);
+                     handleShareSuccess();
+                }
+            } catch (err) {
+                console.log('Share dismissed or errored:', err);
+                // Optional: Decide if you want to decrement on dismiss or only on success.
+                // For now, we decrement anyway as we can't detect actual sharing.
+                handleShareSuccess();
+            }
+        });
+
+        function handleShareSuccess() {
+            shareCount--;
+            if(shareCount <= 0) {
+                shareCounterSpan.innerText = "0";
+                shareBtn.innerHTML = "<i class='fas fa-check'></i> Unlocked!";
+                shareBtn.style.background = "#25D366";
+                setTimeout(() => {
+                    lockScreen.style.opacity = "0";
+                    lockScreen.style.transition = "opacity 0.5s";
+                    setTimeout(() => { lockScreen.style.display = "none"; }, 500);
+                    openBtn.style.display = "flex";
+                    versionLabel.style.display = "block";
+                }, 800);
+            } else {
+                shareCounterSpan.innerText = shareCount;
+            }
+        }
+
+        // --- DRAGGABLE BUTTON LOGIC ---
+        let drag = false, offsetX, offsetY;
+        const open = document.getElementById("open");
+        const dialogBox = document.getElementById("dialogBox");
+        const closeBtn = document.getElementById("closeBtn");
+
+        open.onclick = (e) => {
+            if(open.getAttribute('data-dragged') === 'true') return;
+            dialogBox.classList.add("show");
+        };
+        
+        closeBtn.onclick = () => { dialogBox.classList.remove("show"); };
+
+        const handleStart = (clientX, clientY) => {
+            drag = true;
+            open.setAttribute('data-dragged', 'false');
+            offsetX = clientX - open.getBoundingClientRect().left;
+            offsetY = clientY - open.getBoundingClientRect().top;
+            open.style.cursor = 'grabbing';
+        };
+
+        const handleMove = (clientX, clientY, e) => {
+            if (drag) {
+                if(e.cancelable) e.preventDefault();
+                open.setAttribute('data-dragged', 'true');
+                open.style.left = `${clientX - offsetX}px`;
+                open.style.top = `${clientY - offsetY}px`;
+            }
+        };
+
+        const handleEnd = () => { drag = false; open.style.cursor = 'move'; };
+
+        open.addEventListener("mousedown", (e) => handleStart(e.clientX, e.clientY));
+        document.addEventListener("mousemove", (e) => handleMove(e.clientX, e.clientY, e));
+        document.addEventListener("mouseup", handleEnd);
+
+        open.addEventListener("touchstart", (e) => handleStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        document.addEventListener("touchmove", (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY, e), {passive: false});
+        document.addEventListener("touchend", handleEnd);
+
+
+        // --- PREDICTION & TIMER LOGIC ---
+        const timerText = document.getElementById("timerText");
+        const periodNumber = document.getElementById("periodNumber");
+        const resultText = document.getElementById("resultText");
+        const historyList = document.getElementById("historyList");
+        let lastPeriod = "";
+        let historyData = [];
+
+        function updatePeriodAndTimer() {
+            let now = new Date();
+            let year = now.getUTCFullYear();
+            let month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            let day = String(now.getUTCDate()).padStart(2, '0');
+            let hours = now.getUTCHours();
+            let minutes = now.getUTCMinutes();
+            let seconds = now.getUTCSeconds();
+            let totalMinutes = hours * 60 + minutes;
+            
+            let periodNum = `${year}${month}${day}1000${10001 + totalMinutes}`;
+            periodNumber.innerText = periodNum;
+
+            let remainingSeconds = 60 - seconds;
+            timerText.innerText = `00:${String(remainingSeconds).padStart(2, '0')}`;
+
+            if (periodNum !== lastPeriod) {
+                lastPeriod = periodNum;
+                // Add a slight delay before showing result for realism
+                setTimeout(() => generateResult(periodNum), 2000);
+            }
+        }
+
+        function generateResult(currentPeriod) {
+            let lastTwoDigits = currentPeriod.slice(-2);
+            let sum = [...lastTwoDigits].reduce((a, b) => a + parseInt(b), 0);
+            if (sum > 9) sum = [...String(sum)].reduce((a, b) => a + parseInt(b), 0);
+
+            let isBig = sum >= 5;
+            let result = isBig ? "BIG" : "SMALL";
+            let className = isBig ? "big" : "small";
+
+            resultText.className = "result-text";
+            void resultText.offsetWidth;
+            resultText.innerHTML = result;
+            resultText.classList.add(className, "show");
+
+            addToHistory(currentPeriod, result, className);
+        }
+
+        function addToHistory(period, result, cssClass) {
+            let item = { p: period.slice(-4), r: result, c: cssClass };
+            historyData.unshift(item);
+            if(historyData.length > 3) historyData.pop();
+
+            historyList.innerHTML = "";
+            historyData.forEach(h => {
+                let row = `<div class="history-row">
+                    <span>${h.p}</span>
+                    <span class="history-${h.c}">${h.r}</span>
+                </div>`;
+                historyList.innerHTML += row;
+            });
+        }
+
+        setInterval(updatePeriodAndTimer, 1000);
+        updatePeriodAndTimer();
+    </script>
+</body>
+</html>
